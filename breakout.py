@@ -25,13 +25,15 @@ class Ball:
     def __init__(self):
         self.ball_x = 600
         self.ball_y = 600
+
         self.vector_length = 5
-        self.init_angle = -45
+        self.init_angle = 45
+
         self.vector_x = int(self.vector_length * math.sin(self.init_angle * math.pi / 180))
         self.vector_y = int(self.vector_length * math.cos(self.init_angle * math.pi / 180))
 
-        self.logvec_x = self.vector_x
-        self.logvec_y = self.vector_y
+        self.vector_x_log = self.vector_x
+        self.vector_y_log = self.vector_y
 
         self.line_length = 30
         self.add_x = int(self.line_length * math.sin(self.init_angle * math.pi / 180))
@@ -44,24 +46,31 @@ class Ball:
     def DrawBall(self, screen):
         self.ball = pygame.draw.circle(screen, (255, 255, 0), (self.ball_x, self.ball_y), 10)
 
+
     def DrawVector(self, screen):
         self.line = pygame.draw.line(screen, (255, 100, 0), (self.ball_x, self.ball_y), (self.ball_x + self.add_x, self.ball_y + self.add_y), 2)
 
+
     def VectorLog(self):
-        self.logvec_x = self.vector_x
-        self.logvec_y = self.vector_y
+        self.vector_x_log = self.vector_x
+        self.vector_y_log = self.vector_y
+
 
     def HitException(self):
 
         if self.hit_wall == True and self.hit_shield == True:
-            self.vector_x = -self.logvec_x
-            self.vector_y = -self.logvec_y
+            self.vector_x = -self.vector_x_log
+            self.vector_y = -self.vector_y_log
+
 
     def MoveBall(self):
         self.ball_x += self.vector_x
         self.ball_y += self.vector_y
         self.hit_wall = False
         self.hit_shield = False
+
+        self.VectorLog()
+
 
 
 class Shield:
@@ -91,7 +100,6 @@ class Shield:
 
 
         if ball_object.ball.colliderect(self.shield) == True:
-
             ball_object.hit_shield = True
             hit_sound.play()
 
@@ -124,22 +132,18 @@ class Shield:
     def MoveShield(self):
         move_x , move_y = pygame.mouse.get_rel()
         self.shield_x = self.shield_x + move_x
-        #shield_y = shield_y + 5
+
         if self.shield_x < 27:
             self.shield_x = 27
         elif self.shield_x + self.shield_width > 1173:
             self.shield_x = 1173 - self.shield_width
 
         self.shield.move_ip(self.shield_x, self.shield_y)
-        #print(self.shield_x)
-        #print(self.shield_y)
+
 
 
 class Block:
     def __init__(self):
-        #self.normal_block = [None for i in range(30)]
-
-
         self.normal_block = []
         self.breaked_block = []
         self.block_num = list(range(66))
@@ -161,20 +165,11 @@ class Block:
 
 
     def DrawBlock(self, screen):
-
         self.normal_block.clear()
 
         for i in self.block_num:
             block = pygame.draw.rect(screen, (100,200,50), (self.block_x[i], self.block_y[i], self.block_weight, self.block_height))
             self.normal_block.append(block)
-
-        #clip_object = self.normal_block[0].clip(self.normal_block[1])
-#        print(clip_object.width)
-#        print(clip_object.x)
-#        print(clip_object.y)
-        #block = pygame.draw.rect(screen, (100,200,50), (130, 400, self.block_weight, self.block_height))
-        #self.normal_block.append(block)
-
 
 
     def RemainBlock(self, hit_list, ball_object):
@@ -189,8 +184,47 @@ class Block:
             elif ball_object.ball_x < self.normal_block[i].x and ball_object.ball_y > self.normal_block[i].y + self.normal_block[i].height:
                 hit_list.remove(i)
 
-    def HitBlock(self, ball_object):
 
+    def HitCorner(self, ball_object, corner_x, corner_y, hit_part):
+
+        if hit_part == 'upper_left':
+            if ball_object.vector_x_log > 0 and ball_object.vector_y_log > 0: #ok
+                ball_object.vector_x *= -1
+                ball_object.vector_y *= -1
+            elif ball_object.vector_x_log <= 0 and ball_object.vector_y_log > 0: #ok
+                ball_object.vector_y *= -1
+            elif ball_object.vector_x_log > 0 and ball_object.vector_y_log < 0:
+                ball_object.vector_x *= -1
+
+        if hit_part == 'upper_right':
+            if ball_object.vector_x_log < 0 and ball_object.vector_y_log > 0: #ok
+                ball_object.vector_x *= -1
+                ball_object.vector_y *= -1
+            elif ball_object.vector_x_log >= 0 and ball_object.vector_y_log > 0: #ok
+                ball_object.vector_y *= -1
+            elif ball_object.vector_x_log < 0 and ball_object.vector_y_log < 0: #ok
+                ball_object.vector_x *= -1
+
+        if hit_part == 'lower_right':
+            if ball_object.vector_x_log < 0 and ball_object.vector_y_log < 0: #ok
+                ball_object.vector_x *= -1
+                ball_object.vector_y *= -1
+            elif ball_object.vector_x_log < 0 and ball_object.vector_y_log > 0: #ok
+                ball_object.vector_x *= -1
+            elif ball_object.vector_x_log >= 0 and ball_object.vector_y_log < 0: #ok
+                ball_object.vector_y *= -1
+
+        if hit_part == 'lower_left':
+            if ball_object.vector_x_log > 0 and ball_object.vector_y_log < 0: #ok
+                ball_object.vector_x *= -1
+                ball_object.vector_y *= -1
+            elif ball_object.vector_x_log > 0 and ball_object.vector_y_log > 0: #ok
+                ball_object.vector_x *= -1
+            elif ball_object.vector_x_log <= 0 and ball_object.vector_y_log < 0: #ok
+                ball_object.vector_y *= -1
+
+
+    def HitBlock(self, ball_object):
         hit_list = ball_object.ball.collidelistall(self.normal_block)
         hit_num = len(hit_list)
 
@@ -200,56 +234,27 @@ class Block:
             block_sound.play()
 
         if len(hit_list) > 2:
-            print('Triple!!!')
             self.RemainBlock(hit_list, ball_object)
 
-
         for i in hit_list:
-            #print(i)
             if ball_object.ball_x < self.normal_block[i].x and ball_object.ball_y < self.normal_block[i].y and hit_num == 1:
-                ball_object.vector_x *= -1
-                ball_object.vector_y *= -1
-    #            print('hit1')
+                self.HitCorner(ball_object, self.normal_block[i].x, self.normal_block[i].y, 'upper_left')
             elif ball_object.ball_x > self.normal_block[i].x + self.normal_block[i].width and ball_object.ball_y < self.normal_block[i].y and hit_num == 1:
-                ball_object.vector_x *= -1
-                ball_object.vector_y *= -1
-    #            print('hit2')
+                self.HitCorner(ball_object, self.normal_block[i].x + self.normal_block[i].width, self.normal_block[i].y, 'upper_right')
             elif ball_object.ball_x > self.normal_block[i].x + self.normal_block[i].width and ball_object.ball_y > self.normal_block[i].y + self.normal_block[i].height and hit_num == 1:
-                ball_object.vector_x *= -1
-                ball_object.vector_y *= -1
-    #            print('hit3')
+                self.HitCorner(ball_object, self.normal_block[i].x + self.normal_block[i].width, self.normal_block[i].y + self.normal_block[i].height, 'lower_right')
             elif ball_object.ball_x < self.normal_block[i].x and ball_object.ball_y > self.normal_block[i].y + self.normal_block[i].height and hit_num == 1:
-                ball_object.vector_x *= -1
-                ball_object.vector_y *= -1
-     #           print('hit4')
+                self.HitCorner(ball_object, self.normal_block[i].x, self.normal_block[i].y + self.normal_block[i].height, 'lower_left')
             elif ball_object.ball_x >= self.normal_block[i].x and ball_object.ball_x <= self.normal_block[i].x + self.normal_block[i].width and ball_object.ball_y < self.normal_block[i].y:
                 ball_object.vector_y *= -1
-                #print('hit5')
-     #           if i == 0:
-     #               print('ball_object.ball_x = {0}'.format(ball_object.ball_x))
-     #               print('block[{0}].x + width = {1}'.format(i,self.normal_block[i].x + self.normal_block[i].width))
-     #           else:
-     #               print('ball_object.ball_x = {0}'.format(ball_object.ball_x))
-     #               print('block[{0}].x = {1}'.format(i,self.normal_block[i].x))
             elif ball_object.ball_x > self.normal_block[i].x + self.normal_block[i].width and ball_object.ball_y >= self.normal_block[i].y and ball_object.ball_y <= self.normal_block[i].y + self.normal_block[i].height:
                 ball_object.vector_x *= -1
-     #           print('hit6')
             elif ball_object.ball_x >= self.normal_block[i].x and ball_object.ball_x <= self.normal_block[i].x + self.normal_block[i].width and ball_object.ball_y > self.normal_block[i].y + self.normal_block[i].height:
                 ball_object.vector_y *= -1
-     #           print('hit7')
             elif ball_object.ball_x < self.normal_block[i].x and ball_object.ball_y >= self.normal_block[i].y and ball_object.ball_y <= self.normal_block[i].y + self.normal_block[i].height:
                 ball_object.vector_x *= -1
-     #           print('hit8')
             else:
-                """
-                print('pass')
-                print('ball_object.ball_x = {0}'.format(ball_object.ball_x))
-                print('ball_object.ball_y = {0}'.format(ball_object.ball_y))
-                print('block[{0}].x = {1}'.format(i,self.normal_block[i].x))
-                print('block[{0}].x + width = {1}'.format(i,self.normal_block[i].x + self.normal_block[i].width))
-                """
                 pass
-
 
         for i in hit_list:
             delete_block.append(self.block_num[i])
@@ -271,7 +276,6 @@ class Wall:
 
 
     def HitWall(self, ball_object):
-
         game_continue = True
         wall_collision = ball_object.ball.collidelistall(self.line_list)
 
@@ -293,6 +297,8 @@ class Wall:
 
 
         return game_continue
+
+
 
 def main():
 
@@ -343,9 +349,6 @@ def main():
             block_object.HitBlock(ball_object)
             ball_object.MoveBall()
             past_time = pygame.time.get_ticks()
-
-        #if game_continue != True:
-        #    break
 
         shield_object.MoveShield()
 
