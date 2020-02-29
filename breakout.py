@@ -7,7 +7,11 @@ import sys
 import math
 
 pygame.init()
-pygame.mixer.init(frequency = 44100)
+pygame.mixer.quit()
+#pygame.mixer.pre_init(buffersize = 2048)
+pygame.mixer.pre_init(22050, 16, 2, 1024)
+#pygame.mixer.init(frequency = 44100)
+pygame.mixer.init()
 
 ROOT_DIR = os.path.abspath("sound/")
 
@@ -81,6 +85,8 @@ class Shield:
         self.shield_width = 100
         self.shield_height = 40
 
+        self.init_width = self.shield_width
+
         self.dead_width = 20
         self.dead_height = int(self.shield_height / 2)
         self.dead = [None for i in range(2)]
@@ -105,7 +111,8 @@ class Shield:
 
             #Caluclate ellipse's base point.
             base_x = self.shield_x + self.shield_width / 2
-            base_y = self.shield_y + self.shield_height# / 2
+            base_y = self.shield_y + self.shield.height# + self.shield_height / 2
+            base_y = self.shield_y + self.shield.height * 1.5
 
             a1 = base_x - ball_object.ball_x
             a2 = base_y - ball_object.ball_y
@@ -129,16 +136,29 @@ class Shield:
         return True
 
 
-    def MoveShield(self):
+    def MoveShield(self, block_object):
         move_x , move_y = pygame.mouse.get_rel()
         self.shield_x = self.shield_x + move_x
 
-        if self.shield_x < 27:
-            self.shield_x = 27
-        elif self.shield_x + self.shield_width > 1173:
-            self.shield_x = 1173 - self.shield_width
+        if self.shield_x < 26:
+            self.shield_x = 26
+        elif self.shield_x + self.shield_width > 1176:
+            self.shield_x = 1176 - self.shield_width
 
         self.shield.move_ip(self.shield_x, self.shield_y)
+
+        if 'shield_reseter' in block_object.breaked_block:
+            self.shield_width = self.init_width
+        elif 'shield_shoeter' in block_object.breaked_block and 'shield_longer' in block_object.breaked_block:
+            pass
+        elif 'shield_shorter' in block_object.breaked_block:
+            self.shield_width = int(self.init_width * 0.65)
+        elif 'shield_longer' in block_object.breaked_block:
+            self.shield_width = int(self.init_width * 1.35)
+        else:
+            pass
+
+        block_object.breaked_block.clear()
 
 
 
@@ -147,6 +167,10 @@ class Block:
         self.normal_block = []
         self.breaked_block = []
         self.block_num = list(range(66))
+
+        self.longer_id = [20]
+        self.shorter_id = [16, 47, 51]
+        self.reset_id = [12]
 
         self.block_x = []
         self.block_y = []
@@ -168,8 +192,18 @@ class Block:
         self.normal_block.clear()
 
         for i in self.block_num:
-            block = pygame.draw.rect(screen, (100,200,50), (self.block_x[i], self.block_y[i], self.block_weight, self.block_height))
+            if i in self.longer_id:
+                block = pygame.draw.rect(screen, (0,255,255), (self.block_x[i], self.block_y[i], self.block_weight, self.block_height))
+            elif i in self.shorter_id:
+                block = pygame.draw.rect(screen, (0,0,255), (self.block_x[i], self.block_y[i], self.block_weight, self.block_height))
+            elif i in self.reset_id:
+                block = pygame.draw.rect(screen, (255,255,255), (self.block_x[i], self.block_y[i], self.block_weight, self.block_height))
+            else:
+                block = pygame.draw.rect(screen, (100,200,50), (self.block_x[i], self.block_y[i], self.block_weight, self.block_height))
+
+
             self.normal_block.append(block)
+
 
 
     def RemainBlock(self, hit_list, ball_object):
@@ -262,6 +296,16 @@ class Block:
         for i in delete_block:
             self.block_num.remove(i)
 
+            if i in self.longer_id:
+                self.breaked_block.append('shield_longer')
+            elif i in self.shorter_id:
+                self.breaked_block.append('shield_shorter')
+            elif i in self.reset_id:
+                self.breaked_block.append('shield_reseter')
+            else:
+                self.breaked_block.append('standard')
+
+
 
 
 class Wall:
@@ -338,7 +382,7 @@ def main():
         if game_start == False:
             ball_object.DrawVector(screen)
 
-        if (pygame.time.get_ticks() - past_time > ball_vel) and game_start == True:
+        if pygame.time.get_ticks() - past_time > ball_vel and game_start == True:
             if wall_object.HitWall(ball_object) != True:
                 break
             if shield_object.HitShield(ball_object) != True:
@@ -350,7 +394,8 @@ def main():
             ball_object.MoveBall()
             past_time = pygame.time.get_ticks()
 
-        shield_object.MoveShield()
+
+        shield_object.MoveShield(block_object)
 
         pygame.display.update()
 
