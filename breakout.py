@@ -384,7 +384,18 @@ def main():
         block_object.DrawBlock(screen)
         wall_object.DrawWall(screen, screen_height, line_width)
 
+
+
+        if pygame.key.get_mods() & KMOD_CTRL and game_start == False:
+            game_start = True
+            pygame.mixer.music.play(loops = -1, start = 0.0)
+
+        if game_start == False:
+            ball_object.DrawVector(screen)
+
+
         pygame.display.update()
+
 
         if block_object.NumberBlock() == 0:
             pygame.mixer.music.stop()
@@ -394,12 +405,6 @@ def main():
             print('Game clear!!')
             break
 
-        if pygame.key.get_mods() & KMOD_CTRL and game_start == False:
-            game_start = True
-            pygame.mixer.music.play(loops = -1, start = 0.0)
-
-        if game_start == False:
-            ball_object.DrawVector(screen)
 
         if pygame.time.get_ticks() - past_time > ball_vel and game_start == True:
             if wall_object.HitWall(ball_object) != True or shield_object.HitShield(ball_object) != True:
