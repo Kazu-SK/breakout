@@ -13,15 +13,19 @@ pygame.mixer.pre_init(22050, 16, 2, 1024)
 #pygame.mixer.init(frequency = 44100)
 pygame.mixer.init()
 
+
 ROOT_DIR = os.path.abspath("sound/")
 
-HIT_OTHER = os.path.join(ROOT_DIR, "se_maoudamashii_system35.wav")
-HIT_BlOCK = os.path.join(ROOT_DIR, "se_maoudamashii_system27.wav")
-HIT_DEAD = os.path.join(ROOT_DIR, "se_maoudamashii_battle07.wav")
+hit_sound = pygame.mixer.Sound(os.path.join(ROOT_DIR, "se_maoudamashii_system35.wav"))
+block_sound = pygame.mixer.Sound(os.path.join(ROOT_DIR, "se_maoudamashii_system27.wav"))
+dead_sound = pygame.mixer.Sound(os.path.join(ROOT_DIR, "se_maoudamashii_battle07.wav"))
+hit_shorter = pygame.mixer.Sound(os.path.join(ROOT_DIR, "se_maoudamashii_system25.wav"))
+hit_longer = pygame.mixer.Sound(os.path.join(ROOT_DIR, "se_maoudamashii_system23.wav"))
+hit_reseter = pygame.mixer.Sound(os.path.join(ROOT_DIR, "se_maoudamashii_onepoint20.wav"))
+back_music = pygame.mixer.music.load(os.path.join(ROOT_DIR, "oke_song_shiho_shining_star.mp3"))
 
-hit_sound = pygame.mixer.Sound(HIT_OTHER)
-block_sound = pygame.mixer.Sound(HIT_BlOCK)
-dead_sound = pygame.mixer.Sound(HIT_DEAD)
+CLEAR_BGM = os.path.join(ROOT_DIR, "clear.mp3")
+
 
 
 
@@ -149,12 +153,17 @@ class Shield:
 
         if 'shield_reseter' in block_object.breaked_block:
             self.shield_width = self.init_width
-        elif 'shield_shoeter' in block_object.breaked_block and 'shield_longer' in block_object.breaked_block:
-            pass
+            hit_reseter.play()
+        elif 'shield_shorter' in block_object.breaked_block and 'shield_longer' in block_object.breaked_block:
+            block_sound.play()
         elif 'shield_shorter' in block_object.breaked_block:
             self.shield_width = int(self.init_width * 0.65)
+            hit_shorter.play()
         elif 'shield_longer' in block_object.breaked_block:
             self.shield_width = int(self.init_width * 1.35)
+            hit_longer.play()
+        elif 'standard' in block_object.breaked_block:
+            block_sound.play()
         else:
             pass
 
@@ -168,7 +177,7 @@ class Block:
         self.breaked_block = []
         self.block_num = list(range(66))
 
-        self.longer_id = [20]
+        self.longer_id = [20, 49]
         self.shorter_id = [16, 47, 51]
         self.reset_id = [12]
 
@@ -264,9 +273,6 @@ class Block:
 
         delete_block = []
 
-        if len(hit_list) > 0:
-            block_sound.play()
-
         if len(hit_list) > 2:
             self.RemainBlock(hit_list, ball_object)
 
@@ -307,6 +313,9 @@ class Block:
 
 
 
+    def NumberBlock(self):   # Number of Block on field
+        return len(self.block_num)
+
 
 class Wall:
     def __init__(self):
@@ -346,13 +355,13 @@ class Wall:
 
 def main():
 
-    print('hello blockout!')
+    print('hello breakout!')
     screen_height = 800
     screen_width = 1200
     line_width = 10
 
     screen = pygame.display.set_mode((screen_width, screen_height))
-    pygame.display.set_caption("Blockout")
+    pygame.display.set_caption("Breakout")
     pygame.mixer.init(frequency=22050, size=-16, channels=2, buffer=4096)
 
 
@@ -365,7 +374,7 @@ def main():
     block_object = Block()
 
     game_start = False
-    #game_continue = True
+
 
     while True:
         screen.fill((0,0,0))
@@ -375,17 +384,28 @@ def main():
         block_object.DrawBlock(screen)
         wall_object.DrawWall(screen, screen_height, line_width)
 
+        pygame.display.update()
+
+        if block_object.NumberBlock() == 0:
+            pygame.mixer.music.stop()
+            clear_bgm = pygame.mixer.music.load(CLEAR_BGM)
+            pygame.mixer.music.play(loops = 1, start = 0.0)
+            pygame.time.delay(6000)
+            print('Game clear!!')
+            break
 
         if pygame.key.get_mods() & KMOD_CTRL and game_start == False:
             game_start = True
+            pygame.mixer.music.play(loops = -1, start = 0.0)
 
         if game_start == False:
             ball_object.DrawVector(screen)
 
         if pygame.time.get_ticks() - past_time > ball_vel and game_start == True:
-            if wall_object.HitWall(ball_object) != True:
-                break
-            if shield_object.HitShield(ball_object) != True:
+            if wall_object.HitWall(ball_object) != True or shield_object.HitShield(ball_object) != True:
+                pygame.mixer.music.stop()
+                pygame.time.delay(1000)
+                print('Game over.')
                 break
 
             ball_object.HitException()
@@ -397,11 +417,10 @@ def main():
 
         shield_object.MoveShield(block_object)
 
-        pygame.display.update()
+        #pygame.display.update()
 
         for event in pygame.event.get():
             if event.type == QUIT:
-                pygame.time.delay(1000)
                 print('Game over.')
                 pygame.mixer.quit()
                 pygame.quit()
@@ -411,8 +430,6 @@ def main():
 if __name__ == "__main__":
     main()
 
-    pygame.time.delay(1000)
-    print('Game over.')
     pygame.mixer.quit()
     pygame.quit()
     sys.exit()
