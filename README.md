@@ -4,6 +4,10 @@ Breakout with python
 ![breakout_image](https://user-images.githubusercontent.com/61465092/75628875-6582c800-5c20-11ea-89ae-bc1a278eddbb.png)
 
 
+# 環境
+* Python 3.8.1
+* pygame 1.9.6
+
 
 # スタート方法
 * Ctrlキーを入力したらBGMと共にゲームがスタート。
