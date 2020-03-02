@@ -26,24 +26,23 @@ CLEAR_BGM = os.path.join(ROOT_DIR, "clear.mp3")
 
 
 
-
 class Ball:
     def __init__(self):
         self.ball_x = 600
         self.ball_y = 600
 
-        self.vector_length = 5
-        self.init_angle = 45
+        self.VECTOR_LENGTH = 5
+        self.INIT_ANGLE = 45
 
-        self.vector_x = int(self.vector_length * math.sin(self.init_angle * math.pi / 180))
-        self.vector_y = int(self.vector_length * math.cos(self.init_angle * math.pi / 180))
+        self.vector_x = int(self.VECTOR_LENGTH * math.sin(self.INIT_ANGLE * math.pi / 180))
+        self.vector_y = int(self.VECTOR_LENGTH * math.cos(self.INIT_ANGLE * math.pi / 180))
 
         self.vector_x_log= [self.vector_x for i in range(3)]
         self.vector_y_log= [self.vector_y for i in range(3)]
 
-        self.line_length = 30
-        self.add_x = int(self.line_length * math.sin(self.init_angle * math.pi / 180))
-        self.add_y = int(self.line_length * math.cos(self.init_angle * math.pi / 180))
+        self.LINE_LENGTH = 30
+        self.add_x = int(self.LINE_LENGTH * math.sin(self.INIT_ANGLE * math.pi / 180))
+        self.add_y = int(self.LINE_LENGTH * math.cos(self.INIT_ANGLE * math.pi / 180))
 
         self.hit_wall = False
         self.hit_shield = False
@@ -91,19 +90,19 @@ class Shield:
         self.shield_y = 700
 
         self.shield_width = 100
-        self.shield_height = 40
+        self.SHIELD_HEIGHT = 40
 
         self.init_width = self.shield_width
 
-        self.dead_width = 20
-        self.dead_height = int(self.shield_height / 2)
+        self.DEAD_WIDTH = 20
+        self.DEAD_HEIGHT = int(self.SHIELD_HEIGHT / 2)
         self.dead = [None for i in range(2)]
 
 
     def DrawShield(self, screen):
-        self.shield = pygame.draw.ellipse(screen, (0,100,0), Rect(self.shield_x,self.shield_y,self.shield_width,self.shield_height), 0)
-        self.dead[0] = pygame.draw.rect(screen, (255, 0, 0), Rect(int(self.shield_x - self.dead_width / 2), int(self.shield_y + self.shield_height / 2), self.dead_width, self.dead_height))
-        self.dead[1] = pygame.draw.rect(screen, (255, 0, 0), Rect(int(self.shield_x + self.shield_width - self.dead_width / 2), int(self.shield_y + self.shield_height / 2), self.dead_width, self.dead_height))
+        self.shield = pygame.draw.ellipse(screen, (0,100,0), Rect(self.shield_x,self.shield_y,self.shield_width,self.SHIELD_HEIGHT), 0)
+        self.dead[0] = pygame.draw.rect(screen, (255, 0, 0), Rect(int(self.shield_x - self.DEAD_WIDTH / 2), int(self.shield_y + self.SHIELD_HEIGHT / 2), self.DEAD_WIDTH, self.DEAD_HEIGHT))
+        self.dead[1] = pygame.draw.rect(screen, (255, 0, 0), Rect(int(self.shield_x + self.shield_width - self.DEAD_WIDTH / 2), int(self.shield_y + self.SHIELD_HEIGHT / 2), self.DEAD_WIDTH, self.DEAD_HEIGHT))
 
 
     def HitShield(self, ball_object):
@@ -119,7 +118,7 @@ class Shield:
 
             #Caluclate ellipse's base point.
             base_x = self.shield_x + self.shield_width / 2
-            base_y = self.shield_y + self.shield.height# + self.shield_height / 2
+            base_y = self.shield_y + self.shield.height# + self.SHIELD_HEIGHT / 2
             base_y = self.shield_y + self.shield.height * 1.5
 
             a1 = base_x - ball_object.ball_x
@@ -137,8 +136,8 @@ class Shield:
             cos_theta = math.cos(angle)
             sin_theta = math.sin(angle)
 
-            ball_object.vector_x = int(ball_object.vector_length * sin_theta)
-            ball_object.vector_y = int(-ball_object.vector_length * cos_theta)
+            ball_object.vector_x = int(ball_object.VECTOR_LENGTH * sin_theta)
+            ball_object.vector_y = int(-ball_object.VECTOR_LENGTH * cos_theta)
 
 
         return True
@@ -185,22 +184,22 @@ class Block:
         self.combo_block = []
         self.block_num = list(range(66))
 
-        self.longer_id = [20, 49]
-        self.shorter_id = [16, 47, 51]
-        self.reset_id = [12]
+        self.LONGER_ID = [20, 49]
+        self.SHORTER_ID = [16, 47, 51]
+        self.RESET_ID = [12]
 
         self.block_x = []
         self.block_y = []
-        self.block_height = 50
-        self.block_weight = 80
+        self.BLOCK_HEIGHT = 50
+        self.BLOCK_WEIGHT = 80
         x = 0
         y = 50
 
         for i in range(6):
-            y = y + self.block_height + 1
+            y = y + self.BLOCK_HEIGHT + 1
             x = 50
             for j in range(11):
-                x = x + self.block_weight + 1
+                x = x + self.BLOCK_WEIGHT + 1
                 self.block_x.append(x)
                 self.block_y.append(y)
 
@@ -209,14 +208,14 @@ class Block:
         self.normal_block.clear()
 
         for i in self.block_num:
-            if i in self.longer_id:
-                block = pygame.draw.rect(screen, (0,255,255), (self.block_x[i], self.block_y[i], self.block_weight, self.block_height))
-            elif i in self.shorter_id:
-                block = pygame.draw.rect(screen, (0,0,255), (self.block_x[i], self.block_y[i], self.block_weight, self.block_height))
-            elif i in self.reset_id:
-                block = pygame.draw.rect(screen, (255,255,255), (self.block_x[i], self.block_y[i], self.block_weight, self.block_height))
+            if i in self.LONGER_ID:
+                block = pygame.draw.rect(screen, (0,255,255), (self.block_x[i], self.block_y[i], self.BLOCK_WEIGHT, self.BLOCK_HEIGHT))
+            elif i in self.SHORTER_ID:
+                block = pygame.draw.rect(screen, (0,0,255), (self.block_x[i], self.block_y[i], self.BLOCK_WEIGHT, self.BLOCK_HEIGHT))
+            elif i in self.RESET_ID:
+                block = pygame.draw.rect(screen, (255,255,255), (self.block_x[i], self.block_y[i], self.BLOCK_WEIGHT, self.BLOCK_HEIGHT))
             else:
-                block = pygame.draw.rect(screen, (100,200,50), (self.block_x[i], self.block_y[i], self.block_weight, self.block_height))
+                block = pygame.draw.rect(screen, (100,200,50), (self.block_x[i], self.block_y[i], self.BLOCK_WEIGHT, self.BLOCK_HEIGHT))
 
 
             self.normal_block.append(block)
@@ -320,11 +319,11 @@ class Block:
 
             self.block_num.remove(i)
 
-            if i in self.longer_id:
+            if i in self.LONGER_ID:
                 self.breaked_block.append('shield_longer')
-            elif i in self.shorter_id:
+            elif i in self.SHORTER_ID:
                 self.breaked_block.append('shield_shorter')
-            elif i in self.reset_id:
+            elif i in self.RESET_ID:
                 self.breaked_block.append('shield_reseter')
             else:
                 self.breaked_block.append('standard')
@@ -380,20 +379,35 @@ class Score:
     def __init__(self, x, y):
         self.score_font = pygame.font.SysFont(None, 20)
         self.game_score = 0
-        (self.position_x, self.position_y) = (x, y)
+        (self.POSITION_X, self.POSITION_Y) = (x, y)
 
-        self.break_point = 10
-        self.combo_point = 5
+        self.BGM_TIME = 276 * 2 #[s] bgm's time * 2
+
+        self.BREAK_POINT = 10
+        self.COMBO_POINT = 5
 
     def DrawScore(self, screen):
         score_img = self.score_font.render("SCORE : " + str(self.game_score), True, (255, 200, 250))
-        screen.blit(score_img, (self.position_x, self.position_y))
+        screen.blit(score_img, (self.POSITION_X, self.POSITION_Y))
 
     def AddScore(self, break_num, combo_num):
         if break_num > 0 and combo_num > 1:
-            self.game_score += self.break_point * break_num + self.combo_point * combo_num
+            self.game_score += self.BREAK_POINT * break_num + self.COMBO_POINT * combo_num
         elif break_num > 0:
-            self.game_score += self.break_point * break_num
+            self.game_score += self.BREAK_POINT * break_num
+
+
+    def AddBonus(self, work_time):
+
+        bonus_score = self.BGM_TIME - int(work_time / 1000)
+
+        if bonus_score > 0:
+            print('Bonus : ',bonus_score)
+            self.game_score += bonus_score
+        else:
+            print('No bonus.')
+
+
 
     def OutputScore(self):
         print('SCORE :',self.game_score)
@@ -402,6 +416,7 @@ class Score:
 
 def main():
     print('hello breakout!')
+
     screen_height = 800
     screen_width = 1200
     line_width = 10
@@ -435,6 +450,8 @@ def main():
         if pygame.key.get_mods() & KMOD_CTRL and game_start == False:
             game_start = True
             pygame.mixer.music.play(loops = -1, start = 0.0)
+            start_time = pygame.time.get_ticks()
+
 
         if game_start == False:
             ball_object.DrawVector(screen)
@@ -446,6 +463,10 @@ def main():
             clear_bgm = pygame.mixer.music.load(CLEAR_BGM)
             pygame.mixer.music.play(loops = 1, start = 0.0)
             pygame.time.delay(6000)
+
+            work_time = pygame.time.get_ticks() - start_time
+            score_object.AddBonus(work_time)
+
             score_object.OutputScore()
             print('Game clear!!')
             break
@@ -459,8 +480,6 @@ def main():
                 break
 
             ball_object.HitException()
-
-            #combo_reseter = shield_object.ComboReset(ball_object)
 
             break_num = block_object.HitBlock(ball_object, shield_object.ComboReset(ball_object))
 
