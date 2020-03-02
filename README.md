@@ -10,10 +10,6 @@ Breakout with python
 
 
 # スタート方法
-* 以下のコマンドで実行
-~~~
-$ python breakout.py
-~~~
 * Ctrlキーを入力したらBGMと共にゲームがスタート。
 * スタート時、ボールはオレンジ色の線の方向に進む。
 
