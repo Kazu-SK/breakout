@@ -118,7 +118,7 @@ class Shield:
 
             #Caluclate ellipse's base point.
             base_x = self.shield_x + self.shield_width / 2
-            base_y = self.shield_y + self.shield.height# + self.SHIELD_HEIGHT / 2
+            #base_y = self.shield_y + self.shield.height# + self.SHIELD_HEIGHT / 2
             base_y = self.shield_y + self.shield.height * 1.5
 
             a1 = base_x - ball_object.ball_x
