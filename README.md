@@ -1,7 +1,7 @@
 # breakout
 Breakout with python
 
-![breakout_image](https://user-images.githubusercontent.com/61465092/75628875-6582c800-5c20-11ea-89ae-bc1a278eddbb.png)
+![breakout_image2](https://user-images.githubusercontent.com/61465092/75839872-2c5b7b00-5e0d-11ea-837f-08e0997a4a20.png)
 
 
 # 環境
@@ -38,7 +38,7 @@ Breakout with python
 
 
 # ポイント
-* ブロックひとつにつき10ポイントが与えられる。連続でブロックを破壊した場合、連続で破壊した個数×5ポイントが上乗せされる。
+* ブロックひとつにつき10ポイントが与えられる。連続でブロックを破壊した場合、連続で破壊した個数×5ポイントがブロック破壊時に上乗せされる。
 * ゲームをクリアした場合、クリアの早さに応じてボーナスポイントが与えられる。ただし、9分12秒以内(bgm2周分)にクリアしない場合、ボーナスポイントは0になる。
 
 
