@@ -111,18 +111,16 @@ class Shield:
             dead_sound.play()
             return False
 
-
         if ball_object.ball.colliderect(self.shield) == True:
             ball_object.hit_shield = True
             hit_sound.play()
 
             #Caluclate ellipse's base point.
             base_x = self.shield_x + self.shield_width / 2
-            #base_y = self.shield_y + self.shield.height# + self.SHIELD_HEIGHT / 2
             base_y = self.shield_y + self.shield.height * 1.5
 
-            a1 = base_x - ball_object.ball_x
-            a2 = base_y - ball_object.ball_y
+            a1 = ball_object.ball_x - base_x
+            a2 = ball_object.ball_y - base_y
             b1 = 1
             b2 = 0
 
@@ -130,7 +128,7 @@ class Shield:
             sin_theta = math.sqrt(1 - cos_theta * cos_theta)
 
             angle = math.acos(cos_theta) * 180 / math.pi
-            angle = angle - 90
+            angle = 90 - angle
             angle = math.radians(angle)
 
             cos_theta = math.cos(angle)
@@ -177,6 +175,7 @@ class Shield:
         return ball_object.ball.colliderect(self.shield)
 
 
+
 class Block:
     def __init__(self):
         self.normal_block = []
@@ -217,9 +216,7 @@ class Block:
             else:
                 block = pygame.draw.rect(screen, (100,200,50), (self.block_x[i], self.block_y[i], self.BLOCK_WEIGHT, self.BLOCK_HEIGHT))
 
-
             self.normal_block.append(block)
-
 
 
     def RemainBlock(self, hit_list, ball_object):
@@ -283,11 +280,8 @@ class Block:
         if combo_reseter == True:
             self.combo_block.clear()
 
-        #print(self.combo_block)
-
         if len(hit_list) > 2:
             self.RemainBlock(hit_list, ball_object)
-
 
         for i in hit_list:
             if ball_object.ball_x < self.normal_block[i].x and ball_object.ball_y < self.normal_block[i].y and hit_num == 1:
@@ -337,12 +331,16 @@ class Block:
     def NumberBlock(self):   # Number of Block on field
         return len(self.block_num)
 
-    def NumberCombo(self):   # Number of Block on field
+
+    def NumberCombo(self):
         return len(self.combo_block)
+
+
 
 class Wall:
     def __init__(self):
         self.line_list = [None for i in range(4)]
+
 
     def DrawWall(self, screen, screen_height, line_width):
         self.line_list[0] = pygame.draw.line(screen, (255, 165, 0), (20, 0), (20, screen_height), line_width)
@@ -375,6 +373,7 @@ class Wall:
         return game_continue
 
 
+
 class Score:
     def __init__(self, x, y):
         self.score_font = pygame.font.SysFont(None, 20)
@@ -386,9 +385,11 @@ class Score:
         self.BREAK_POINT = 10
         self.COMBO_POINT = 5
 
+
     def DrawScore(self, screen):
         score_img = self.score_font.render("SCORE : " + str(self.game_score), True, (255, 200, 250))
         screen.blit(score_img, (self.POSITION_X, self.POSITION_Y))
+
 
     def AddScore(self, break_num, combo_num):
         if break_num > 0 and combo_num > 1:
@@ -398,7 +399,6 @@ class Score:
 
 
     def AddBonus(self, work_time):
-
         bonus_score = self.BGM_TIME - int(work_time / 1000)
 
         if bonus_score > 0:
@@ -406,7 +406,6 @@ class Score:
             self.game_score += bonus_score
         else:
             print('No bonus.')
-
 
 
     def OutputScore(self):
