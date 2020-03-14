@@ -183,6 +183,9 @@ class Block:
         self.combo_block = []
         self.block_num = list(range(66))
 
+        self.init_x = 130
+        self.init_y = 100
+
         self.LONGER_ID = [20, 49]
         self.SHORTER_ID = [16, 47, 51]
         self.RESET_ID = [12]
@@ -195,10 +198,16 @@ class Block:
         y = 50
 
         for i in range(6):
-            y = y + self.BLOCK_HEIGHT + 1
-            x = 50
+            if i == 0:
+                y = self.init_y
+            else:
+                y = y + self.BLOCK_HEIGHT + 1
+            #x = 50
             for j in range(11):
-                x = x + self.BLOCK_WEIGHT + 1
+                if j == 0:
+                    x = self.init_x
+                else:
+                    x = x + self.BLOCK_WEIGHT + 1
                 self.block_x.append(x)
                 self.block_y.append(y)
 
@@ -235,39 +244,39 @@ class Block:
     def HitCorner(self, ball_object, corner_x, corner_y, hit_part):
 
         if hit_part == 'upper_left':
-            if ball_object.vector_x_log[0] > 0 and ball_object.vector_y_log[0] > 0: #ok
+            if ball_object.vector_x_log[0] > 0 and ball_object.vector_y_log[0] > 0:
                 ball_object.vector_x *= -1
                 ball_object.vector_y *= -1
-            elif ball_object.vector_x_log[0] <= 0 and ball_object.vector_y_log[0] > 0: #ok
+            elif ball_object.vector_x_log[0] <= 0 and ball_object.vector_y_log[0] > 0:
                 ball_object.vector_y *= -1
             elif ball_object.vector_x_log[0] > 0 and ball_object.vector_y_log[0] < 0:
                 ball_object.vector_x *= -1
 
         if hit_part == 'upper_right':
-            if ball_object.vector_x_log[0] < 0 and ball_object.vector_y_log[0] > 0: #ok
+            if ball_object.vector_x_log[0] < 0 and ball_object.vector_y_log[0] > 0:
                 ball_object.vector_x *= -1
                 ball_object.vector_y *= -1
-            elif ball_object.vector_x_log[0] >= 0 and ball_object.vector_y_log[0] > 0: #ok
+            elif ball_object.vector_x_log[0] >= 0 and ball_object.vector_y_log[0] > 0:
                 ball_object.vector_y *= -1
-            elif ball_object.vector_x_log[0] < 0 and ball_object.vector_y_log[0] < 0: #ok
+            elif ball_object.vector_x_log[0] < 0 and ball_object.vector_y_log[0] < 0:
                 ball_object.vector_x *= -1
 
         if hit_part == 'lower_right':
-            if ball_object.vector_x_log[0] < 0 and ball_object.vector_y_log[0] < 0: #ok
+            if ball_object.vector_x_log[0] < 0 and ball_object.vector_y_log[0] < 0:
                 ball_object.vector_x *= -1
                 ball_object.vector_y *= -1
-            elif ball_object.vector_x_log[0] < 0 and ball_object.vector_y_log[0] > 0: #ok
+            elif ball_object.vector_x_log[0] < 0 and ball_object.vector_y_log[0] > 0:
                 ball_object.vector_x *= -1
-            elif ball_object.vector_x_log[0] >= 0 and ball_object.vector_y_log[0] < 0: #ok
+            elif ball_object.vector_x_log[0] >= 0 and ball_object.vector_y_log[0] < 0:
                 ball_object.vector_y *= -1
 
         if hit_part == 'lower_left':
-            if ball_object.vector_x_log[0] > 0 and ball_object.vector_y_log[0] < 0: #ok
+            if ball_object.vector_x_log[0] > 0 and ball_object.vector_y_log[0] < 0:
                 ball_object.vector_x *= -1
                 ball_object.vector_y *= -1
-            elif ball_object.vector_x_log[0] > 0 and ball_object.vector_y_log[0] > 0: #ok
+            elif ball_object.vector_x_log[0] > 0 and ball_object.vector_y_log[0] > 0:
                 ball_object.vector_x *= -1
-            elif ball_object.vector_x_log[0] <= 0 and ball_object.vector_y_log[0] < 0: #ok
+            elif ball_object.vector_x_log[0] <= 0 and ball_object.vector_y_log[0] < 0:
                 ball_object.vector_y *= -1
 
 
@@ -392,6 +401,7 @@ class Score:
 
 
     def AddScore(self, break_num, combo_num):
+
         if break_num > 0 and combo_num > 1:
             self.game_score += self.BREAK_POINT * break_num + self.COMBO_POINT * combo_num
         elif break_num > 0:
@@ -432,7 +442,7 @@ def main():
     wall_object = Wall()
     shield_object = Shield()
     block_object = Block()
-    score_object = Score(40, 20)  #score position
+    score_object = Score(40, 20)
 
     game_start = False
 
