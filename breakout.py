@@ -202,7 +202,7 @@ class Block:
                 y = self.init_y
             else:
                 y = y + self.BLOCK_HEIGHT + 1
-            #x = 50
+                
             for j in range(11):
                 if j == 0:
                     x = self.init_x
