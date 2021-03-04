@@ -10,6 +10,16 @@ Breakout with python
 
 
 # スタート方法
+* インストール
+```
+git clone https://github.com/Kazu-SK/breakout.git
+```
+
+* 実行
+```
+python breakout.py
+```
+
 * Ctrlキーを入力したらBGMと共にゲームがスタート。
 * スタート時、ボールはオレンジ色の線の方向に進む。
 
